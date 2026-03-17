@@ -1,0 +1,51 @@
+.column {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  min-width: 320px;
+  height: calc(100vh - 120px);
+  padding: 16px;
+  background: var(--glass-bg);
+  border-top: 3px solid transparent; /* default */
+  transition: background-color var(--transition-fast), border-color var(--transition-normal);
+}
+
+.column.drag-over {
+  background: rgba(255, 255, 255, 0.08); /* highlight on drag over */
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+}
+
+.status-border-backlog { border-top-color: var(--color-backlog); }
+.status-border-in-progress { border-top-color: var(--color-in-progress); }
+.status-border-done { border-top-color: var(--color-done); }
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.column-title {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ticket-count {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.column-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  /* Scrollbar override for columns if needed */
+}

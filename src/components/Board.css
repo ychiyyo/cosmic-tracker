@@ -1,0 +1,8 @@
+.board {
+  display: flex;
+  gap: 24px;
+  padding: 24px 32px;
+  overflow-x: auto;
+  align-items: flex-start;
+  height: 100%;
+}

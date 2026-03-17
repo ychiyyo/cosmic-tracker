@@ -1,0 +1,95 @@
+.ticket-card {
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: grab;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ticket-card:active {
+  cursor: grabbing;
+}
+
+.ticket-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+}
+
+.ticket-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-backlog { background-color: var(--color-backlog); box-shadow: 0 0 8px var(--color-backlog); }
+.status-in-progress { background-color: var(--color-in-progress); box-shadow: 0 0 8px var(--color-in-progress); }
+.status-done { background-color: var(--color-done); box-shadow: 0 0 8px var(--color-done); }
+
+.delete-btn {
+  color: var(--text-secondary);
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+}
+
+.ticket-card:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  color: var(--danger);
+}
+
+.ticket-title {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.ticket-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.ticket-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ticket-date {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.drag-handle {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
