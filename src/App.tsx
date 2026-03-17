@@ -6,31 +6,78 @@ import { Plus, Download, Upload } from 'lucide-react';
 import './App.css';
 
 function App() {
-  const [tickets, setTickets] = useState<Ticket[]>(() => {
-    const saved = localStorage.getItem('tickets');
-    if (saved) {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const gistId = import.meta.env.VITE_GIST_ID;
+  const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+
+  // Fetch initial data from Gist
+  useEffect(() => {
+    async function fetchTickets() {
+      if (!gistId || !githubToken) {
+        console.warn("Missing Gist credentials. Falling back to empty state.");
+        setIsLoading(false);
+        return;
+      }
       try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return [];
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        const data = await res.json();
+        const content = data.files['tickets.json']?.content;
+        if (content) {
+          setTickets(JSON.parse(content));
+        }
+      } catch (err) {
+        console.error("Error fetching tickets from Gist:", err);
+      } finally {
+        setIsLoading(false);
       }
     }
-    return [
-      {
-        id: '1',
-        title: 'Welcome to your deep space tracker',
-        description: 'Drag this ticket to in-progress or done!',
-        status: 'backlog',
-        createdAt: Date.now()
-      }
-    ];
-  });
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    fetchTickets();
+  }, [gistId, githubToken]);
 
+  // Sync data to Gist whenever tickets change (skip initial empty loads)
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    localStorage.setItem('tickets', JSON.stringify(tickets));
-  }, [tickets]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return; // Skip save on mount
+    }
+    if (isLoading) return; // Don't save while we are still loading the initial state
+
+    async function saveTickets() {
+      if (!gistId || !githubToken) return;
+      try {
+        await fetch(`https://api.github.com/gists/${gistId}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            files: {
+              'tickets.json': {
+                content: JSON.stringify(tickets, null, 2)
+              }
+            }
+          })
+        });
+      } catch (err) {
+        console.error("Error saving tickets to Gist:", err);
+      }
+    }
+    
+    // Simple debounce so we aren't spamming the API on rapid moves
+    const timeoutId = setTimeout(saveTickets, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [tickets, gistId, githubToken, isLoading]);
 
   const handleAddTicket = (newTicket: Omit<Ticket, 'id' | 'createdAt'>) => {
     const ticket: Ticket = {
@@ -112,11 +159,17 @@ function App() {
       </header>
       
       <main className="app-main">
-        <Board 
-          tickets={tickets} 
-          onMoveTicket={handleMoveTicket}
-          onDeleteTicket={handleDeleteTicket}
-        />
+        {isLoading ? (
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+            Syncing from Cloud...
+          </div>
+        ) : (
+          <Board 
+            tickets={tickets} 
+            onMoveTicket={handleMoveTicket}
+            onDeleteTicket={handleDeleteTicket}
+          />
+        )}
       </main>
 
       <AddTicketModal 
