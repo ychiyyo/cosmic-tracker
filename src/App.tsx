@@ -31,7 +31,13 @@ function App() {
         const data = await res.json();
         const content = data.files['tickets.json']?.content;
         if (content) {
-          setTickets(JSON.parse(content));
+          const parsed = JSON.parse(content);
+          // Handle both old array format and new {tickets, epics} format
+          if (Array.isArray(parsed)) {
+            setTickets(parsed);
+          } else if (parsed && typeof parsed === 'object' && parsed.tickets) {
+            setTickets(parsed.tickets);
+          }
         }
       } catch (err) {
         console.error("Error fetching tickets from Gist:", err);
