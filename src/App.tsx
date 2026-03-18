@@ -176,7 +176,7 @@ function App() {
           ) : (
             <div className="logo-orb"></div>
           )}
-          <h1>{activeEpicId ? currentEpic?.title : 'Cosmic Tracker'}</h1>
+          <h1>{activeEpicId ? currentEpic?.title : 'YChiyyodu Tracker'}</h1>
           {activeEpicId && <span className="epic-badge">Project</span>}
         </div>
         <div className="header-actions">

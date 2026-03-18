@@ -1,8 +1,9 @@
 .column {
   display: flex;
   flex-direction: column;
-  width: 320px;
-  min-width: 320px;
+  flex: 1;
+  min-width: 300px;
+  max-width: 600px;
   height: calc(100vh - 120px);
   padding: 16px;
   background: var(--glass-bg);
