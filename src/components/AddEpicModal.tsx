@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import type { Ticket, TicketStatus } from '../types';
+import type { Epic, TicketStatus } from '../types';
 import './AddTicketModal.css';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (ticket: Omit<Ticket, 'id' | 'createdAt'>) => void;
-  epicId?: string;
+  onAdd: (epic: Omit<Epic, 'id' | 'createdAt'>) => void;
 }
 
-export function AddTicketModal({ isOpen, onClose, onAdd, epicId }: Props) {
+export function AddEpicModal({ isOpen, onClose, onAdd }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TicketStatus>('backlog');
@@ -23,8 +22,7 @@ export function AddTicketModal({ isOpen, onClose, onAdd, epicId }: Props) {
     onAdd({
       title: title.trim(),
       description: description.trim(),
-      status,
-      epicId: epicId || ''
+      status
     });
     
     setTitle('');
@@ -37,37 +35,37 @@ export function AddTicketModal({ isOpen, onClose, onAdd, epicId }: Props) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>New Idea / Ticket</h2>
+          <h2>New Project / Epic</h2>
           <button className="close-btn" onClick={onClose}>&times;</button>
         </div>
         
         <form onSubmit={handleSubmit} className="ticket-form">
           <div className="form-group">
-            <label htmlFor="title">Title</label>
+            <label htmlFor="epic-title">Project Name</label>
             <input 
-              id="title"
+              id="epic-title"
               type="text" 
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="What's the idea?"
+              placeholder="e.g. Garage door opener"
               autoFocus
               required
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="description">Description (optional)</label>
+            <label htmlFor="epic-description">Description</label>
             <textarea 
-              id="description"
+              id="epic-description"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="Add some details..."
+              placeholder="Add some project details..."
               rows={3}
             />
           </div>
 
           <div className="form-group">
-            <label>Status</label>
+            <label>Starting Status</label>
             <div className="status-selector">
               {(['backlog', 'in-progress', 'done'] as TicketStatus[]).map(s => (
                 <button
@@ -85,7 +83,7 @@ export function AddTicketModal({ isOpen, onClose, onAdd, epicId }: Props) {
           
           <div className="modal-actions">
             <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-primary" disabled={!title.trim()}>Create Ticket</button>
+            <button type="submit" className="btn-primary" disabled={!title.trim()}>Create Project</button>
           </div>
         </form>
       </div>

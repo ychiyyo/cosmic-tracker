@@ -1,17 +1,19 @@
 import React from 'react';
-import type { Ticket, TicketStatus } from '../types';
+import type { Ticket, TicketStatus, Epic } from '../types';
 import { TicketCard } from './TicketCard';
 import './Column.css';
 
 interface Props {
   status: TicketStatus;
   title: string;
-  tickets: Ticket[];
-  onMoveTicket: (ticketId: string, newStatus: TicketStatus) => void;
-  onDeleteTicket: (ticketId: string) => void;
+  items: (Ticket | Epic)[];
+  isEpic?: boolean;
+  onEpicClick?: (id: string) => void;
+  onMoveItem: (id: string, newStatus: TicketStatus) => void;
+  onDeleteItem: (id: string) => void;
 }
 
-export function Column({ status, title, tickets, onMoveTicket, onDeleteTicket }: Props) {
+export function Column({ status, title, items, isEpic, onEpicClick, onMoveItem, onDeleteItem }: Props) {
   
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault(); // Necessary to allow dropping
@@ -27,7 +29,7 @@ export function Column({ status, title, tickets, onMoveTicket, onDeleteTicket }:
     e.currentTarget.classList.remove('drag-over');
     const ticketId = e.dataTransfer.getData('ticketId');
     if (ticketId) {
-      onMoveTicket(ticketId, status);
+      onMoveItem(ticketId, status);
     }
   };
 
@@ -43,15 +45,16 @@ export function Column({ status, title, tickets, onMoveTicket, onDeleteTicket }:
           <span className={`status-dot status-${status}`}></span>
           {title}
         </h3>
-        <span className="ticket-count">{tickets.length}</span>
+        <span className="ticket-count">{items.length}</span>
       </div>
       <div className="column-content">
-        {tickets.map(ticket => (
+        {items.map(item => (
           <TicketCard 
-            key={ticket.id} 
-            ticket={ticket} 
-            onMove={onMoveTicket}
-            onDelete={onDeleteTicket}
+            key={item.id} 
+            item={item} 
+            isEpic={isEpic}
+            onClick={() => onEpicClick?.(item.id)}
+            onDelete={onDeleteItem}
           />
         ))}
       </div>

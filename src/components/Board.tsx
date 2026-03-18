@@ -1,17 +1,19 @@
-import type { Ticket, TicketStatus } from '../types';
+import type { Ticket, TicketStatus, Epic } from '../types';
 import { Column } from './Column';
 import './Board.css';
 
 interface Props {
-  tickets: Ticket[];
-  onMoveTicket: (id: string, newStatus: TicketStatus) => void;
-  onDeleteTicket: (id: string) => void;
+  items: (Ticket | Epic)[];
+  isEpic?: boolean;
+  onEpicClick: (id: string) => void;
+  onMoveItem: (id: string, newStatus: TicketStatus) => void;
+  onDeleteItem: (id: string) => void;
 }
 
-export function Board({ tickets, onMoveTicket, onDeleteTicket }: Props) {
+export function Board({ items, isEpic, onEpicClick, onMoveItem, onDeleteItem }: Props) {
   
-  const getTicketsByStatus = (status: TicketStatus) => {
-    return tickets.filter(t => t.status === status).sort((a, b) => b.createdAt - a.createdAt);
+  const getItemsByStatus = (status: TicketStatus) => {
+    return items.filter(i => i.status === status).sort((a, b) => b.createdAt - a.createdAt);
   };
 
   return (
@@ -19,23 +21,29 @@ export function Board({ tickets, onMoveTicket, onDeleteTicket }: Props) {
       <Column 
         status="backlog" 
         title="Ideas & Backlog" 
-        tickets={getTicketsByStatus('backlog')} 
-        onMoveTicket={onMoveTicket}
-        onDeleteTicket={onDeleteTicket}
+        items={getItemsByStatus('backlog')} 
+        isEpic={isEpic}
+        onEpicClick={onEpicClick}
+        onMoveItem={onMoveItem}
+        onDeleteItem={onDeleteItem}
       />
       <Column 
         status="in-progress" 
         title="In Progress" 
-        tickets={getTicketsByStatus('in-progress')} 
-        onMoveTicket={onMoveTicket}
-        onDeleteTicket={onDeleteTicket}
+        items={getItemsByStatus('in-progress')} 
+        isEpic={isEpic}
+        onEpicClick={onEpicClick}
+        onMoveItem={onMoveItem}
+        onDeleteItem={onDeleteItem}
       />
       <Column 
         status="done" 
         title="Done" 
-        tickets={getTicketsByStatus('done')} 
-        onMoveTicket={onMoveTicket}
-        onDeleteTicket={onDeleteTicket}
+        items={getItemsByStatus('done')} 
+        isEpic={isEpic}
+        onEpicClick={onEpicClick}
+        onMoveItem={onMoveItem}
+        onDeleteItem={onDeleteItem}
       />
     </div>
   );

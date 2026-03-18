@@ -46,6 +46,37 @@
   -webkit-text-fill-color: transparent;
 }
 
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateX(-2px);
+}
+
+.epic-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  border-radius: 6px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  margin-left: 8px;
+  font-weight: 600;
+}
+
 .header-actions {
   display: flex;
   align-items: center;

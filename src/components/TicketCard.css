@@ -6,6 +6,30 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
+.ticket-card.epic-card {
+  cursor: pointer;
+  border-left: 3px solid var(--accent-primary);
+  transition: all var(--transition-medium);
+}
+
+.ticket-card.epic-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #fff;
+}
+
+.drill-down-icon {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+}
+
+.epic-card:hover .drill-down-icon {
+  opacity: 1;
+  transform: translateX(2px);
+  color: var(--text-primary);
+}
+
 .ticket-card:active {
   cursor: grabbing;
 }

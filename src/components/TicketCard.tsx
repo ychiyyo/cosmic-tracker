@@ -1,16 +1,17 @@
-import type { Ticket, TicketStatus } from '../types';
-import { Clock, GripHorizontal } from 'lucide-react';
+import type { Ticket, Epic } from '../types';
+import { Clock, GripHorizontal, ChevronRight } from 'lucide-react';
 import './TicketCard.css';
 
 interface Props {
-  ticket: Ticket;
-  onMove?: (id: string, newStatus: TicketStatus) => void;
+  item: Ticket | Epic;
+  isEpic?: boolean;
+  onClick?: () => void;
   onDelete?: (id: string) => void;
 }
 
-export function TicketCard({ ticket, onDelete }: Props) {
+export function TicketCard({ item, isEpic, onClick, onDelete }: Props) {
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('ticketId', ticket.id);
+    e.dataTransfer.setData('ticketId', item.id);
     e.currentTarget.classList.add('dragging');
   };
 
@@ -18,36 +19,41 @@ export function TicketCard({ ticket, onDelete }: Props) {
     e.currentTarget.classList.remove('dragging');
   };
 
-  const dateStr = new Date(ticket.createdAt).toLocaleDateString(undefined, {
+  const dateStr = new Date(item.createdAt).toLocaleDateString(undefined, {
     month: 'short', day: 'numeric'
   });
 
   return (
     <div 
-      className="ticket-card glass-panel"
+      className={`ticket-card glass-panel ${isEpic ? 'epic-card' : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onClick={() => isEpic && onClick?.()}
     >
       <div className="ticket-header">
-        <span className={`status-dot status-${ticket.status}`}></span>
+        <span className={`status-dot status-${item.status}`}></span>
         <div className="ticket-actions">
            {onDelete && (
-             <button onClick={() => onDelete(ticket.id)} className="delete-btn" title="Delete Ticket">
+             <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="delete-btn" title="Delete">
                &times;
              </button>
            )}
         </div>
       </div>
-      <h4 className="ticket-title">{ticket.title}</h4>
-      {ticket.description && (
-        <p className="ticket-desc">{ticket.description}</p>
+      <h4 className="ticket-title">{item.title}</h4>
+      {item.description && (
+        <p className="ticket-desc">{item.description}</p>
       )}
       <div className="ticket-footer">
         <span className="ticket-date">
           <Clock size={12} /> {dateStr}
         </span>
-        <GripHorizontal size={14} className="drag-handle" />
+        {isEpic ? (
+          <ChevronRight size={14} className="drill-down-icon" />
+        ) : (
+          <GripHorizontal size={14} className="drag-handle" />
+        )}
       </div>
     </div>
   );
