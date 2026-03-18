@@ -92,5 +92,12 @@
 
 .app-main {
   flex: 1;
+  display: flex;
+  overflow: hidden;
+  padding-bottom: 24px;
+}
+
+.board-container {
+  flex: 1;
   overflow: hidden;
 }
