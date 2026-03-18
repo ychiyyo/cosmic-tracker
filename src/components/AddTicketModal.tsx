@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import type { Ticket, TicketStatus, Epic } from '../types';
+import type { Ticket, TicketStatus } from '../types';
 import './AddTicketModal.css';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (ticket: Omit<Ticket, 'id' | 'createdAt'>) => void;
-  epics: Epic[];
-  defaultEpicId?: string;
 }
 
-export function AddTicketModal({ isOpen, onClose, onAdd, epics, defaultEpicId }: Props) {
+export function AddTicketModal({ isOpen, onClose, onAdd }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TicketStatus>('backlog');
-  const [epicId, setEpicId] = useState<string | undefined>(defaultEpicId);
 
   if (!isOpen) return null;
 
@@ -25,14 +22,12 @@ export function AddTicketModal({ isOpen, onClose, onAdd, epics, defaultEpicId }:
     onAdd({
       title: title.trim(),
       description: description.trim(),
-      status,
-      epicId
+      status
     });
     
     setTitle('');
     setDescription('');
     setStatus('backlog');
-    setEpicId(defaultEpicId);
     onClose();
   };
 
@@ -84,23 +79,6 @@ export function AddTicketModal({ isOpen, onClose, onAdd, epics, defaultEpicId }:
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="epic-select">Project / Epic</label>
-            <select 
-              id="epic-select"
-              value={epicId || ''}
-              onChange={e => setEpicId(e.target.value || undefined)}
-              className="epic-dropdown"
-            >
-              <option value="">No Epic</option>
-              {epics.map(epic => (
-                <option key={epic.id} value={epic.id}>
-                  {epic.name}
-                </option>
-              ))}
-            </select>
           </div>
           
           <div className="modal-actions">

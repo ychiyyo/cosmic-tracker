@@ -1,18 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import type { Ticket, TicketStatus, Epic } from './types';
+import type { Ticket, TicketStatus } from './types';
 import { Board } from './components/Board';
 import { AddTicketModal } from './components/AddTicketModal';
-import { AddEpicModal } from './components/AddEpicModal';
-import { EpicSidebar } from './components/EpicSidebar';
 import { Plus, Download, Upload } from 'lucide-react';
 import './App.css';
 
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [epics, setEpics] = useState<Epic[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEpicModalOpen, setIsEpicModalOpen] = useState(false);
-  const [activeEpicId, setActiveEpicId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
   const gistId = import.meta.env.VITE_GIST_ID;
@@ -36,13 +31,7 @@ function App() {
         const data = await res.json();
         const content = data.files['tickets.json']?.content;
         if (content) {
-          const parsed = JSON.parse(content);
-          if (Array.isArray(parsed)) {
-            setTickets(parsed);
-          } else {
-            setTickets(parsed.tickets || []);
-            setEpics(parsed.epics || []);
-          }
+          setTickets(JSON.parse(content));
         }
       } catch (err) {
         console.error("Error fetching tickets from Gist:", err);
@@ -75,7 +64,7 @@ function App() {
           body: JSON.stringify({
             files: {
               'tickets.json': {
-                content: JSON.stringify({ tickets, epics }, null, 2)
+                content: JSON.stringify(tickets, null, 2)
               }
             }
           })
@@ -88,7 +77,7 @@ function App() {
     // Simple debounce so we aren't spamming the API on rapid moves
     const timeoutId = setTimeout(saveTickets, 1000);
     return () => clearTimeout(timeoutId);
-  }, [tickets, epics, gistId, githubToken, isLoading]);
+  }, [tickets, gistId, githubToken, isLoading]);
 
   const handleAddTicket = (newTicket: Omit<Ticket, 'id' | 'createdAt'>) => {
     const ticket: Ticket = {
@@ -97,14 +86,6 @@ function App() {
       createdAt: Date.now()
     };
     setTickets(prev => [...prev, ticket]);
-  };
-
-  const handleAddEpic = (newEpic: Omit<Epic, 'id'>) => {
-    const epic: Epic = {
-      ...newEpic,
-      id: crypto.randomUUID()
-    };
-    setEpics(prev => [...prev, epic]);
   };
 
   const handleMoveTicket = (id: string, newStatus: TicketStatus) => {
@@ -139,9 +120,6 @@ function App() {
         const data = JSON.parse(event.target?.result as string);
         if (Array.isArray(data)) {
           setTickets(data);
-        } else {
-          setTickets(data.tickets || []);
-          setEpics(data.epics || []);
         }
       } catch (err) {
         console.error("Failed to parse JSON backup");
@@ -181,40 +159,23 @@ function App() {
       </header>
       
       <main className="app-main">
-        <EpicSidebar 
-          epics={epics} 
-          activeEpicId={activeEpicId}
-          onSelectEpic={setActiveEpicId}
-          onAddClick={() => setIsEpicModalOpen(true)}
-        />
-        
-        <div className="board-container">
-          {isLoading ? (
-            <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
-              Syncing from Cloud...
-            </div>
-          ) : (
-            <Board 
-              tickets={tickets.filter(t => !activeEpicId || t.epicId === activeEpicId)} 
-              onMoveTicket={handleMoveTicket}
-              onDeleteTicket={handleDeleteTicket}
-            />
-          )}
-        </div>
+        {isLoading ? (
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+            Syncing from Cloud...
+          </div>
+        ) : (
+          <Board 
+            tickets={tickets} 
+            onMoveTicket={handleMoveTicket}
+            onDeleteTicket={handleDeleteTicket}
+          />
+        )}
       </main>
 
       <AddTicketModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onAdd={handleAddTicket}
-        epics={epics}
-        defaultEpicId={activeEpicId}
-      />
-
-      <AddEpicModal
-        isOpen={isEpicModalOpen}
-        onClose={() => setIsEpicModalOpen(false)}
-        onAdd={handleAddEpic}
       />
     </div>
   );
